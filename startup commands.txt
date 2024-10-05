@@ -2,8 +2,15 @@ go to packages/react-frontend and do
 npm run dev
 
 to push commits:
-go to main repo directory
-git status
-git add .
-git commit -m ""
-git push
+	go to main repo directory
+	git status
+	git add .
+	git commit -m ""
+	git push
+or
+	open Tower
+	go to Working Copy
+	select all files to commit
+	write commit subject message in Commit Subject and Description text boxes
+	click the arrow pointing diagonally up in the toolbar
+	click "Push HEAD"
