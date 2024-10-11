@@ -11,6 +11,9 @@
   "author": "Isaac Rudnick",
   "license": "ISC",
   "workspaces": [
-      "packages/*"
-  ]
+    "packages/*"
+  ],
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
 }
