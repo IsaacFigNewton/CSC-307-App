@@ -33,33 +33,53 @@ const users = {
     ]
 };
 
+// helper functions
 const findUserByName = (name) => {
-    return users["users_list"].filter(
-        (user) => user["name"] === name
-    );
+  return users["users_list"].filter(
+      (user) => user["name"] === name
+  );
 };
+const findUserById = (id) =>
+users["users_list"].find((user) => user["id"] === id);
 
-app.get("/users", (req, res) => {
-    const name = req.query.name;
-    if (name != undefined) {
-        let result = findUserByName(name);
-        result = { users_list: result };
-        res.send(result);
-    } else {
-        res.send(users);
-    }
-});
-
+// instantiate the app
 app.use(express.json());
 
+// get index page
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+// get users page
 app.get("/users", (req, res) => {
     res.send(JSON.stringify(users) + " no one expects the JS inquisition!!");
 });
 
+
+// get user with query
+app.get("/users", (req, res) => {
+  const name = req.query.name;
+  if (name != undefined) {
+      let result = findUserByName(name);
+      result = { users_list: result };
+      res.send(result);
+  } else {
+      res.send(users);
+  }
+});
+
+// get user with id
+app.get("/users/:id", (req, res) => {
+const id = req.params["id"]; //or req.params.id
+let result = findUserById(id);
+if (result === undefined) {
+  res.status(404).send("Resource not found.");
+} else {
+  res.send(result);
+}
+});
+
+// listen for requests
 app.listen(port, () => {
   console.log(
     `Example app listening at http://localhost:${port}`
