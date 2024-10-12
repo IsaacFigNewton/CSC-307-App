@@ -41,6 +41,11 @@ const findUserByName = (name) => {
 };
 const findUserById = (id) =>
 users["users_list"].find((user) => user["id"] === id);
+const addUser = (user) => {
+  users["users_list"].push(user);
+  return user;
+};
+
 
 // instantiate the app
 app.use(express.json());
@@ -54,7 +59,6 @@ app.get("/", (req, res) => {
 app.get("/users", (req, res) => {
     res.send(JSON.stringify(users) + " no one expects the JS inquisition!!");
 });
-
 
 // get user with query
 app.get("/users", (req, res) => {
@@ -84,4 +88,11 @@ app.listen(port, () => {
   console.log(
     `Example app listening at http://localhost:${port}`
   );
+});
+
+// add a user based on the request body if it's a POST request
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  addUser(userToAdd);
+  res.send();
 });
