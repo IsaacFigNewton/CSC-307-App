@@ -40,17 +40,22 @@ const findUserByName = (name) => {
       (user) => user["name"] === name
   );
 };
+
 const findUserById = (id) =>
-users["users_list"].find((user) => user["id"] === id);
+  users["users_list"].find((user) => user["id"] === id);
+
 const addUser = (user) => {
+  user.id = Math.floor(Math.random() * 1000000)
   users["users_list"].push(user);
   return user;
 };
+
 const filterUsersByNameJob = (name, job) => {
   return users["users_list"].filter(
       (user) => (user["name"] === name) && (user["job"] === job)
   );
 };
+
 const removeUserById = (id) => {
   users["users_list"] = users["users_list"].filter(
     (user) => user["id"] != id
@@ -105,8 +110,11 @@ if (result === undefined) {
 // add a user based on the request body if it's a POST request
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  newUser = addUser(userToAdd);
+  res
+  .status(201)
+  .location(`/users/${newUser.id}`)
+  .json(newUser);
 });
 
 // remove a particular user by id from the users list

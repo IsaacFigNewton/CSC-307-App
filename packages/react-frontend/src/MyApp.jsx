@@ -22,20 +22,38 @@ function MyApp() {
   
     return promise;
   }
+
+  function deleteUser(id) {
+    const promise = fetch("Http://localhost:8000/users/" + id, {
+      method: "DELETE"
+    });
+  
+    return promise;
+  }
   
   function updateList(person) {
     postUser(person)
-    .then(() => setCharacters([...characters, person]))
+    .then((res) => res.json())
+    .then((newUser) => {
+      person.id = newUser.id
+      setCharacters([...characters, person]);
+    })
     .catch((error) => {
       console.log(error);
     });
   }
 
-  function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i != index;
+  function removeOneCharacter(index, id) {
+    deleteUser(id)
+    .then(() => {
+      const updated = characters.filter((character, i) => {
+        return i != index;
+      });
+      setCharacters(updated);
+    })
+    .catch((error) => {
+      console.log(error);
     });
-    setCharacters(updated);
   }
 
   useEffect(() => {
