@@ -18,6 +18,8 @@ function getUsers(name, job) {
     promise = findUserByName(name);
   } else if (job && !name) {
     promise = findUserByJob(job);
+  } else {
+    console.log("Filtering by both name and job not implemented yet.")
   }
   return promise;
 }

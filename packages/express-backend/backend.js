@@ -3,12 +3,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import {
-  addUser,
-  getUsers,
-  findUserById
-} from "./services/user-service.js";
-import { User } from "./models/user.js"
+import userServices from "./services/user-service.js";
+import User from "./models/user.js"
 
 dotenv.config();
 const { MONGO_CONNECTION_STRING } = process.env;
@@ -38,8 +34,7 @@ app.get("/users", (req, res) => {
   const job = req.query.job;
   
   // get all users that match a given name.
-  getUsers(name, job)
-  .then((result) => result.json())
+  userServices.getUsers(name, job)
   .then((users) => {
     res.send({ users_list: users });
   })
@@ -51,8 +46,7 @@ app.get("/users", (req, res) => {
 // get user with id
 app.get("/users/:id", (req, res) => {
   const id = req.params["id"]; //or req.params.id
-  findUserById(id)
-  .then((result) => result.json())
+  userServices.findUserById(id)
   .then((user) => {
     if (user === undefined) {
       res.status(404).send("Resource not found.");
@@ -68,8 +62,7 @@ app.get("/users/:id", (req, res) => {
 // add a user based on the request body if it's a POST request
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd)
-  .then((result) => result.json())
+  userServices.addUser(userToAdd)
   .then((user) => {
     res
     .status(201)
@@ -84,7 +77,7 @@ app.post("/users", (req, res) => {
 // remove a particular user by id from the users list
 app.delete("/users/:id", (req, res) => {
   const id = req.params["id"]; //or req.params.id
-  let result = removeUserById(id);
+  let result = userServices.removeUserById(id);
   if (result === undefined) {
     res.status(404).send("Resource not found.");
   } else {
