@@ -1,15 +1,21 @@
 // backend.js
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 import {
   addUser,
   getUsers,
-  findUserById,
-  findUserByName,
-  findUserByJob,
+  findUserById
 } from "./services/user-service.js";
 import { User } from "./models/user.js"
 
+dotenv.config();
+const { MONGO_CONNECTION_STRING } = process.env;
+mongoose.set("debug", true);
+mongoose
+  .connect(MONGO_CONNECTION_STRING)
+  .catch((error) => console.log(error));
 const app = express();
 const port = 8000;
 
