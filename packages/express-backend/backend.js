@@ -8,10 +8,20 @@ import User from "./models/user.js"
 
 dotenv.config();
 const { MONGO_CONNECTION_STRING } = process.env;
+
 mongoose.set("debug", true);
 mongoose
-  .connect(MONGO_CONNECTION_STRING)
+  .connect(MONGO_CONNECTION_STRING, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .catch((error) => console.log(error));
+
+// mongoose
+//   .connect(MONGO_CONNECTION_STRING)
+//   .catch((error) => console.log(error));
+
+
 const app = express();
 const port = 8000;
 
