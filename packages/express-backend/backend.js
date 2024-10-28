@@ -87,13 +87,15 @@ app.post("/users", (req, res) => {
 // remove a particular user by id from the users list
 app.delete("/users/:id", (req, res) => {
   const id = req.params["id"]; //or req.params.id
-  let result = userServices.removeUserById(id);
-  if (result === undefined) {
-    res.status(404).send("Resource not found.");
-  } else {
-    res.send(result);
-  }
-  });
+  userServices.removeUserById(id)
+  .then((result) => {
+    if (result === undefined) {
+      res.status(404).send("Resource not found.");
+    } else {
+      res.status(204).send(result);
+    }
+  })
+});
   
 // listen for requests
 app.listen(port, () => {

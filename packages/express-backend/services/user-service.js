@@ -11,10 +11,7 @@ import userModel from "../models/user.js";
 
 //rewrite this
 const removeUserById = (id) => {
-  users["users_list"] = users["users_list"].filter(
-    (user) => user["id"] != id
-  );
-  return id;
+  return userModel.findByIdAndDelete({_id : id})
 };
 
 function findUserByName(name) {

@@ -45,11 +45,20 @@ function MyApp() {
 
   function removeOneCharacter(index, _id) {
     deleteUser(_id)
-    .then(() => {
-      const updated = characters.filter((character, i) => {
-        return i != index;
-      });
-      setCharacters(updated);
+    .then((res) => {
+
+      if (res.status == 204) {
+        const updated = characters.filter((character, i) => {
+          return i != index;
+        });
+        setCharacters(updated);
+
+      } else if (res.status == 404) {
+        console.log("User " + _id + " does not exist.")
+
+      } else {
+        throw new Error("Invalid response code: " + res.status)
+      }
     })
     .catch((error) => {
       console.log(error);
