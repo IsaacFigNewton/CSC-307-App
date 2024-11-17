@@ -1,63 +1,32 @@
 // backend.js
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import userServices from "./services/user-service.js";
+import User from "./models/user.js"
+
+dotenv.config();
+const { MONGO_CONNECTION_STRING } = process.env;
+
+mongoose.set("debug", true);
+mongoose
+  .connect(MONGO_CONNECTION_STRING, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .catch((error) => console.log(error));
+
+// mongoose
+//   .connect(MONGO_CONNECTION_STRING)
+//   .catch((error) => console.log(error));
+
 
 const app = express();
 const port = 8000;
-const users = {
-    users_list: [
-      {
-        id: "xyz789",
-        name: "Charlie",
-        job: "Janitor"
-      },
-      {
-        id: "abc123",
-        name: "Mac",
-        job: "Bouncer"
-      },
-      {
-        id: "ppp222",
-        name: "Mac",
-        job: "Professor"
-      },
-      {
-        id: "yat999",
-        name: "Dee",
-        job: "Aspring actress"
-      },
-      {
-        id: "zap555",
-        name: "Dennis",
-        job: "Bartender"
-      }
-    ]
-};
-
-// helper functions
-const findUserByName = (name) => {
-  return users["users_list"].filter(
-      (user) => user["name"] === name
-  );
-};
-const findUserById = (id) =>
-users["users_list"].find((user) => user["id"] === id);
-const addUser = (user) => {
-  users["users_list"].push(user);
-  return user;
-};
-const filterUsersByNameJob = (name, job) => {
-  return users["users_list"].filter(
-      (user) => (user["name"] === name) && (user["job"] === job)
-  );
-};
-const removeUserById = (id) => {
-  users["users_list"] = users["users_list"].filter(
-    (user) => user["id"] != id
-  );
-  return id;
-};
 
 // instantiate the app
+app.use(cors());
 app.use(express.json());
 
 // get index page
@@ -73,50 +42,60 @@ app.get("/", (req, res) => {
 app.get("/users", (req, res) => {
   const name = req.query.name;
   const job = req.query.job;
-  if (name != undefined && job != undefined) {
-    // get all users that match a given name and a given job.
-      let result = filterUsersByNameJob(name, job);
-      result = { users_list: result };
-      res.send(result);
-  } else if (name != undefined) {
-    // get all users that match a given name.
-      let result = findUserByName(name);
-      result = { users_list: result };
-      res.send(result);
-  } else {
-    // if no query provided, just send the JSON of all the users
-      res.send(users);
-  }
+  
+  // get all users that match a given name.
+  userServices.getUsers(name, job)
+  .then((users) => {
+    res.send({ users_list: users });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 });
 
 // get user with id
 app.get("/users/:id", (req, res) => {
-const id = req.params["id"]; //or req.params.id
-let result = findUserById(id);
-if (result === undefined) {
-  res.status(404).send("Resource not found.");
-} else {
-  res.send(result);
-}
+  const id = req.params["id"]; //or req.params.id
+  userServices.findUserById(id)
+  .then((user) => {
+    if (user === undefined) {
+      res.status(404).send("Resource not found.");
+    } else {
+      res.send(user);
+    }
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 });
 
 // add a user based on the request body if it's a POST request
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  userServices.addUser(userToAdd)
+  .then((user) => {
+    res
+    .status(201)
+    .location(`/users/${user.id}`)
+    .json(user);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 });
 
 // remove a particular user by id from the users list
 app.delete("/users/:id", (req, res) => {
   const id = req.params["id"]; //or req.params.id
-  let result = removeUserById(id);
-  if (result === undefined) {
-    res.status(404).send("Resource not found.");
-  } else {
-    res.send(result);
-  }
-  });
+  userServices.removeUserById(id)
+  .then((result) => {
+    if (result === undefined) {
+      res.status(404).send("Resource not found.");
+    } else {
+      res.status(204).send(result);
+    }
+  })
+});
   
 // listen for requests
 app.listen(port, () => {

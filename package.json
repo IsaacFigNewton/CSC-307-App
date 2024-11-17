@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "start": "npm run -w react-frontend start"
+    "start": "npm run -w express-backend start; npm run -w react-frontend start"
   },
   "author": "Isaac Rudnick",
   "license": "ISC",
